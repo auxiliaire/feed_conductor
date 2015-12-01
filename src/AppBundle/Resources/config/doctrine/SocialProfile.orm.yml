@@ -1,0 +1,92 @@
+AppBundle\Entity\SocialProfile:
+    type: entity
+    table: socialProfile
+    indexes:
+        socialSetting:
+            columns:
+                - socialSettingId
+    uniqueConstraints:
+        'PUBLIC_ID':
+            columns:
+                - publicSocialProfileId
+    id:
+        socialProfileId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+            id: true
+            column: socialProfileId
+            generator:
+                strategy: IDENTITY
+    fields:
+        publicSocialProfileId:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+            column: publicSocialProfileId
+        socialSettingId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+            column: socialSettingId
+        socialProfileName:
+            type: string
+            nullable: false
+            length: 200
+            options:
+                fixed: false
+            column: socialProfileName
+        socialProfileScreenName:
+            type: string
+            nullable: false
+            length: 200
+            options:
+                fixed: false
+            column: socialProfileScreenName
+        socialProfileImage:
+            type: string
+            nullable: false
+            length: 200
+            options:
+                fixed: false
+            column: socialProfileImage
+        socialProfileBackgroundColor:
+            type: string
+            nullable: false
+            length: 20
+            options:
+                fixed: false
+            column: socialProfileBackgroundColor
+        socialProfileLinkColor:
+            type: string
+            nullable: false
+            length: 20
+            options:
+                fixed: false
+            column: socialProfileLinkColor
+        socialProfileTextColor:
+            type: string
+            nullable: false
+            length: 20
+            options:
+                fixed: false
+            column: socialProfileTextColor
+        socialProfileOauthToken:
+            type: string
+            nullable: true
+            length: 200
+            options:
+                fixed: false
+            column: socialProfileOauthToken
+        socialProfileOauthTokenSecret:
+            type: string
+            nullable: true
+            length: 200
+            options:
+                fixed: false
+            column: socialProfileOauthTokenSecret
+    lifecycleCallbacks: {  }

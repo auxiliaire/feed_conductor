@@ -1,0 +1,37 @@
+AppBundle\Entity\SocialSetting:
+    type: entity
+    table: socialSetting
+    uniqueConstraints:
+        StringId:
+            columns:
+                - socialSettingStringId
+    id:
+        socialSettingId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+            id: true
+            column: socialSettingId
+            generator:
+                strategy: IDENTITY
+    fields:
+        socialSettingStringId:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: socialSettingStringId
+        socialSettingName:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: socialSettingName
+        socialSettingActive:
+            type: boolean
+            nullable: false
+            column: socialSettingActive
+    lifecycleCallbacks: {  }

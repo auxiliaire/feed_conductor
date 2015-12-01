@@ -1,0 +1,47 @@
+AppBundle\Entity\SocialStatus:
+    type: entity
+    table: socialStatus
+    indexes:
+        socialProfileId:
+            columns:
+                - socialProfileId
+    uniqueConstraints:
+        'PUBLIC_ID':
+            columns:
+                - publicSocialStatusId
+    id:
+        socialStatusId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: socialStatusId
+            generator:
+                strategy: IDENTITY
+    fields:
+        publicSocialStatusId:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+            column: publicSocialStatusId
+        socialProfileId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: socialProfileId
+        socialStatusText:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+            column: socialStatusText
+        socialStatusCreatedAt:
+            type: datetime
+            nullable: false
+            column: socialStatusCreatedAt
+    lifecycleCallbacks: {  }
