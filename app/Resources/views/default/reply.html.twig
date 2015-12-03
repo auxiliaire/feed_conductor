@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block core %}
+    <h2>Reply to tweet</h2>
+    <p>{{ status }}</p>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+
+    <div>
+        {{ form_label(form.text, 'Reply:') }}
+        {{ form_errors(form.text) }}
+        {{ form_widget(form.text) }}
+    </div>
+
+    <div>
+        {{ form_widget(form.submit) }}
+    </div>
+
+    {{ form_end(form) }}
+{% endblock %}

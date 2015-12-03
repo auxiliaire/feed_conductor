@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block core %}
+    <h2>The response of the twitter API endpoint:</h2>
+    <h3>{{ apiEndpoint }}</h3>
+    <pre>
+        {{ dump(response) }}
+    </pre>
+{% endblock %}

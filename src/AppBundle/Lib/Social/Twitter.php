@@ -9,6 +9,7 @@ namespace AppBundle\Lib\Social;
 
 use Abraham\TwitterOAuth\TwitterOAuth;
 use AppBundle\AppBundle;
+use AppBundle\Entity\SocialProfile;
 
 class Twitter implements ISocial
 {
@@ -177,6 +178,7 @@ class Twitter implements ISocial
         } else if (is_int($user)) {
             $idKey = "user_id";
             $value = $user;
+            $user = new \AppBundle\Entity\SocialProfile();
         } else {
             $idKey = "screen_name";
             $value = $user;
@@ -218,4 +220,59 @@ class Twitter implements ISocial
         $this->_socialSetting = $socialSetting;
     }
 
+    /**
+     * Twitter OAuth authentication method
+     *
+     * @param string $redirect
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @throws RedirectException
+     * @throws SocialException
+     * @throws \Abraham\TwitterOAuth\TwitterOAuthException
+     */
+    public function userAuth($redirect, \Symfony\Component\HttpFoundation\Request $request) {
+        $session = $request->getSession();
+        if (!$request->get('oauth_token')) {
+            $request_token = $this->connect()->oauth('oauth/request_token', array('oauth_callback' => $redirect));
+
+            $session->set('oauth_token', $request_token['oauth_token']);
+            $session->set('oauth_token_secret', $request_token['oauth_token_secret']);
+
+            $url = $this->connect()->url('oauth/authorize', array('oauth_token' => $request_token['oauth_token']));
+
+            $re = new RedirectException();
+            $re->setUrl($url);
+            throw $re;
+        } else {
+            $request_token = array();
+            $request_token['oauth_token'] = $session->get('oauth_token');
+            $request_token['oauth_token_secret'] = $session->get('oauth_token_secret');
+
+            if ($request->get('oauth_token') && $request_token['oauth_token'] !== $request->get('oauth_token')) {
+                throw new SocialException("Twitter authentication error (token mismatch: '{$request_token['oauth_token']}' != '{$request->get('oauth_token')}').");
+            }
+            /* @var $connection \Abraham\TwitterOAuth\TwitterOAuth */
+            $connection = $this->connect();
+            $connection->setOauthToken($request_token['oauth_token'], $request_token['oauth_token_secret']);
+            $access_token = $connection->oauth("oauth/access_token", array("oauth_verifier" => $request->get('oauth_verifier')));
+
+            $session->set('access_token', $access_token);
+
+            /* @var $user \AppBundle\Entity\SocialProfile */
+            $user = $this->em->getRepository("AppBundle:SocialProfile")->findOneByPublicSocialProfileId($access_token['user_id']);
+            if (!$user) {
+                $connection->setOauthToken($access_token['oauth_token'], $access_token['oauth_token_secret']);
+                $twitterUser = $connection->get("account/verify_credentials");
+                $user = new SocialProfile();
+                $user->setPublicSocialProfileId($access_token['user_id']);
+                $user->setSocialSettingId($this->getSocialSetting()->getSocialSettingId());
+                $user->setSocialProfileName($twitterUser->name);
+                $user->setSocialProfileScreenName($twitterUser->screen_name);
+                $user->setSocialProfileImage($twitterUser->profile_image_url);
+                // Skip saving sensitive data in demo
+                //$user->setSocialProfileOauthToken($access_token['oauth_token']);
+                //$user->setSocialProfileOauthTokenSecret($access_token['oauth_token_secret']);
+                $this->setUser($user);
+            }
+        }
+    }
 }
